@@ -45,7 +45,7 @@ This repository contains Ansible playbooks for deploying and undeploying a web s
 
 5. **Run the Additional Deployment Playbook (if needed)**
    ```sh
-   ansible-playbook -i inventory deploy_webserver2.yml
+   ansible-playbook -i inventory deploy_webserver3.yml
    ```
 
 6. **Run the Undeployment Playbook**
