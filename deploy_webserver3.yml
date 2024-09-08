@@ -1,0 +1,36 @@
+- name: Deploy Apache web server
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install apache2
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+
+    - name: Create a custom HTML page
+      copy:
+        dest: /var/www/html/index.html
+        content: |
+          <html>
+          <head><title>Hello World</title></head>
+          <body>
+            <h1>Hello World from SJSU-{{ inventory_hostname[-1] }}</h1>
+          </body>
+          </html>
+
+    - name: Ensure apache2 is started
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: Check apache2 status
+      command: systemctl status apache2
+      register: apache_status
+      failed_when: false
+      changed_when: false
+
+    - name: Debug apache2 status
+      debug:
+        msg: "{{ apache_status.stdout }}"
