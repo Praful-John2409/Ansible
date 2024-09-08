@@ -1,0 +1,50 @@
+---
+- name: Undeploy Apache web server
+  hosts: all
+  become: yes
+  tasks:
+    - name: Stop Apache service
+      service:
+        name: apache2
+        state: stopped
+      ignore_errors: yes
+
+    - name: Disable Apache service
+      systemd:
+        name: apache2
+        enabled: no
+      ignore_errors: yes
+
+    - name: Remove Apache package
+      apt:
+        name: apache2
+        state: absent
+
+    - name: Remove custom HTML files
+      file:
+        path: /var/www/html/{{ item }}
+        state: absent
+      with_items:
+        - index.html
+        
+    - name: Remove Apache configuration files (if any)
+      file:
+        path: /etc/apache2/sites-available/{{ item }}
+        state: absent
+      with_items:
+        - 000-default.conf
+        - custom-site.conf
+
+    - name: Remove Apache log files
+      file:
+        path: /var/log/apache2/{{ item }}
+        state: absent
+      with_items:
+        - access.log
+        - error.log
+
+    - name: Remove Apache service unit file (if custom)
+      file:
+        path: /etc/systemd/system/apache2.service
+        state: absent
+      ignore_errors: yes
